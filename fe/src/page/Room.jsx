@@ -3,7 +3,7 @@ import { AppContext } from '../context/AppContext'
 
 const Room = () => {
 
-    const { handleCreateRoom, roomId, wsRef, handleJoinRoom, setUserRoomId, userRoomId, name , setName } = useContext(AppContext)
+    const { handleCreateRoom, roomId,  handleJoinRoom, setUserRoomId, userRoomId, name , setName } = useContext(AppContext)
 
     
 

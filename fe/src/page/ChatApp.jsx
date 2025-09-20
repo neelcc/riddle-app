@@ -7,19 +7,29 @@ export default function ChatApp() {
   
 
   const handleSend = (e) => {
+
     if(e) e.preventDefault();
+    
     const message = inputRef.current?.value;
     if(message.trim()=='') return
+
     inputRef.current.value = ""
+    console.log(message);
+    console.log("boomoboo");
     console.log(messages);
     
-    wsRef.current.send(JSON.stringify({
-      type : "chat",
-      payload : {
-        message : message
-      }
-    }))
-
+    if(wsRef.current && wsRef.current.readyState == WebSocket.OPEN ){
+      wsRef.current.send(JSON.stringify({
+        type : "chat",
+        payload : {
+          message : message,
+          sender : name        
+        }
+      }))
+    }else{
+      console.log("Websocket Server is not open yet!");
+    }
+        
   };
 
   return (
@@ -48,8 +58,8 @@ export default function ChatApp() {
           <div className="flex-1 overflow-y-auto mb-4 space-y-2">
             {messages.map((msg,id) => (
               <div key={id} className=" flex items-center justify-between p-2 bg-black text-white rounded">
-                <p>{msg}</p>
-                <p>.. {name}</p>
+                <p>{msg.message}</p>
+                <p>..{msg.sender}</p>
               </div>
             ))}
           </div>

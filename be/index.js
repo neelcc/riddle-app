@@ -21,7 +21,7 @@ app.post('/create-room', async (req,res)=>{
         })
     }
     
-    const roomId = crypto.randomBytes(5).toString("base64").replace(/[^a-z]/gi, '').substring(0,5);
+    const roomId = crypto.randomBytes(5).toString("base64").replace(/[^a-z]/gi, '').substring(0,6);
     const token = await jwt.sign({ name } , process.env.JWT_SECRET )
     console.log(token);
     
@@ -60,18 +60,6 @@ app.listen(3000,()=>{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 import { WebSocketServer } from 'ws'
 
 
@@ -87,18 +75,27 @@ wss.on("connection",(socket)=>{
         // console.log(message);
         const parsedMessage = JSON.parse(message)
         console.log("hii");
-        
         console.log(parsedMessage);
+        
         if(parsedMessage.type==='join')
-        {
-            allSockets.push({
-                socket,
-                room : parsedMessage.payload.roomId
-            })
-        }
-
-        if(parsedMessage.type==='chat'){
+            {
+                allSockets.push({
+                    socket,
+                    room : parsedMessage.payload.roomId,
+                    name : parsedMessage.payload.name
+                })
+            }
+            
+            if(parsedMessage.type==='chat'){
             let currentUserRoom = null
+            console.log("boom");
+            console.log(parsedMessage.payload.message);
+            console.log("boom");
+            console.log(parsedMessage.payload.sender);
+            console.log("booom boom");
+            console.log(allSockets);
+            
+            
             for(let i=0 ; i<allSockets.length; i++){
                 if(allSockets[i].socket==socket)
                 {
@@ -109,11 +106,16 @@ wss.on("connection",(socket)=>{
             for(let i=0 ; i<allSockets.length; i++){
                 if(allSockets[i].room==currentUserRoom)
                 {
-                    allSockets[i].socket.send(parsedMessage.payload.message)
+                    allSockets[i].socket.send(JSON.stringify(parsedMessage))
                 }
             }
 
         }
+
+        socket.on("close", () => {
+            allSockets = allSockets.filter(s => s.socket !== socket);
+          });
+        
 
       });
 })

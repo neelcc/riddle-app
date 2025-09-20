@@ -5,35 +5,43 @@ import { toast, Bounce   } from "react-toastify";
 
 export const AppContext = createContext()
 
-const AppContextProvider = ({ children }) => {
+export const AppContextProvider = ({ children }) => {
 
     const navigate = useNavigate();
     const [ roomId , setRoomId ] = useState(localStorage.getItem('roomId'))
     const [ userRoomId , setUserRoomId ] = useState('')
     const [ token , setToken ] = useState(localStorage.getItem('token'))
     const [ user , setUser ] = useState(null)
-    const [ name , setName ] = useState()
+    const [ name , setName ] = useState(localStorage.getItem('name'))
     const [messages, setMessages] = useState([])  
     const wsRef = useRef();
     const inputRef = useRef();
 
     useEffect(()=>{
 
-        const ws = new WebSocket("http://localhost:3001")
-        
+        const ws = new WebSocket("ws://localhost:3001")
+
+        console.log(name);
         ws.onmessage = (event) => {
-            setMessages(m=>[...m,event.data])
-            console.log(messages);
-            console.log("aaji");   
+            const parseData = JSON.parse(event.data)
+            const message = parseData.payload
+            console.log(message);
+            console.log(event);
+            console.log("aajo");
+            setMessages(m=>[...m,message])
         }
     
         wsRef.current = ws
     
         ws.onopen = () => {
+
+            console.log("ws.onopen");
+            
             ws.send(JSON.stringify({
                 type : "join",
                 payload : {
-                    roomId : roomId
+                    roomId : roomId,
+                    name : name
                 }
             }))
         }
@@ -49,6 +57,7 @@ const AppContextProvider = ({ children }) => {
     useEffect(()=>{
         localStorage.setItem('token',token?token:null)
         localStorage.setItem('roomId',roomId)
+        localStorage.setItem('name',name)
         console.log(token);
         console.log(roomId); 
     },[token])
@@ -85,42 +94,23 @@ const AppContextProvider = ({ children }) => {
                 transition: Bounce,
                 });
         }
+
+        
+
     }
 
     const handleJoinRoom = async () => {
-        console.log(userRoomId);
-        const ws = new WebSocket("http://localhost:3001")
-        ws.onmessage = (event) => {
-            setMessages(m=>[...m,event.data])
-            console.log(messages);
-            console.log("aaji");   
-        }
-    
-        
-        wsRef.current = ws
-
-        ws.onopen = () => {
-            ws.send(JSON.stringify({
-                type : "join",
-                payload : {
-                    roomId : userRoomId
-                }
-            }))
-        }
-
-        const { data } = await axios.post("http://localhost:3000/join-room",
+        const { data } = await axios.post("http://localhost:3000/create-room",
             {
                 name
             }
         )
-        
         if(data.success){
             setRoomId(userRoomId)
-            navigate('/chat')
             setToken(data.token)
             localStorage.setItem('token',data.token)
             localStorage.setItem('roomId',userRoomId)
-
+            navigate('/chat')
         }else{
             toast(`🦄 ${data.message}`, {
                 position: "top-right",
@@ -135,6 +125,15 @@ const AppContextProvider = ({ children }) => {
                 });
         }
 
+        wsRef.current.onopen = () => {
+            wsRef.current.send(JSON.stringify({
+                type : "join",
+                payload : {
+                    roomId : roomId,
+                    name : name
+                }
+            }))
+        }
         
     }
 
@@ -174,5 +173,3 @@ const AppContextProvider = ({ children }) => {
     </AppContext.Provider> )
 }
 
-
-export default AppContextProvider
