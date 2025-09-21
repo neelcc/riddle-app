@@ -84,6 +84,24 @@ wss.on("connection",(socket)=>{
                     room : parsedMessage.payload.roomId,
                     name : parsedMessage.payload.name
                 })
+
+                let currentUserRoom = null
+
+
+                for(let i=0 ; i<allSockets.length; i++){
+                    if(allSockets[i].socket==socket)
+                    {
+                        currentUserRoom = allSockets[i].room
+                    }
+                }
+                
+                for(let i=0 ; i<allSockets.length; i++){
+                    if(allSockets[i].room==currentUserRoom)
+                    {
+                        allSockets[i].socket.send(JSON.stringify(parsedMessage))
+                    }
+                }
+                console.log(allSockets);
             }
             
             if(parsedMessage.type==='chat'){
@@ -110,12 +128,10 @@ wss.on("connection",(socket)=>{
                 }
             }
 
-        }
-
-        socket.on("close", () => {
-            allSockets = allSockets.filter(s => s.socket !== socket);
-          });
-        
-
+            }
       });
+      socket.on("close", () => {
+        allSockets = allSockets.filter(s => s.  socket !== socket);
+        console.log("Client disconnected");
+    });
 })

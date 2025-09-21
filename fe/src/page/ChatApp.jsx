@@ -12,18 +12,21 @@ export default function ChatApp() {
     
     const message = inputRef.current?.value;
     if(message.trim()=='') return
-
+    let now = new Date(); 
+    let currentTime = now.toLocaleTimeString('en-us',{hour: '2-digit', minute: '2-digit'})
     inputRef.current.value = ""
     console.log(message);
     console.log("boomoboo");
     console.log(messages);
+    console.log(name);
     
     if(wsRef.current && wsRef.current.readyState == WebSocket.OPEN ){
       wsRef.current.send(JSON.stringify({
         type : "chat",
         payload : {
           message : message,
-          sender : name        
+          sender : name,
+          time : currentTime    
         }
       }))
     }else{
@@ -57,9 +60,12 @@ export default function ChatApp() {
 
           <div className="flex-1 overflow-y-auto mb-4 space-y-2">
             {messages.map((msg,id) => (
-              <div key={id} className=" flex items-center justify-between p-2 bg-black text-white rounded">
+              <div key={id} className={`flex items-center justify-between p-2 ${ msg.sender===localStorage.getItem('name') ? "bg-blue-600" : "bg-black" } text-white rounded`}>
                 <p>{msg.message}</p>
-                <p>..{msg.sender}</p>
+                <div className=' flex flex-col ' >
+                <p className=' text-sm font-medium ' >{ msg.sender===localStorage.getItem('name') ? "You" : msg.sender }</p>
+                <p className=' text-xs text-center text-gray-200/80 '>{msg.time}</p>
+                </div>
               </div>
             ))}
           </div>

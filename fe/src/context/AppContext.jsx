@@ -22,20 +22,40 @@ export const AppContextProvider = ({ children }) => {
         const ws = new WebSocket("ws://localhost:3001")
 
         console.log(name);
+
         ws.onmessage = (event) => {
-            const parseData = JSON.parse(event.data)
+            
+        const parseData = JSON.parse(event.data)
+        console.log(parseData);
+        
+           if(parseData.type==="chat"){
             const message = parseData.payload
-            console.log(message);
             console.log(event);
             console.log("aajo");
             setMessages(m=>[...m,message])
         }
-    
+            if(parseData.type=="join"){
+              if(parseData.payload.name && parseData.payload.name != name ){     
+                toast(`🦄 ${parseData.payload.name} Joined! `, {
+                    position: "top-right",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                    });
+            }
+            }   
+        }
+
+
+        
         wsRef.current = ws
     
         ws.onopen = () => {
-
-            console.log("ws.onopen");
             
             ws.send(JSON.stringify({
                 type : "join",
@@ -48,11 +68,13 @@ export const AppContextProvider = ({ children }) => {
     
         return () => {
             ws.close()
-        }
+        }   
         
     
-    },[])
+    },[roomId])
    
+
+
 
     useEffect(()=>{
         localStorage.setItem('token',token?token:null)
@@ -76,7 +98,7 @@ export const AppContextProvider = ({ children }) => {
         if(data.success){
             setRoomId(data.roomId)
             console.log((data.roomId));
-            navigate('/chat')
+            navigate('/chat' )
             setToken(data.token)
             localStorage.setItem('token',data.token)
             localStorage.setItem('roomId',data.roomId)
@@ -100,6 +122,19 @@ export const AppContextProvider = ({ children }) => {
     }
 
     const handleJoinRoom = async () => {
+
+        if(!userRoomId) return toast(`🦄 RoomId is Missing !` , {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            });
+
         const { data } = await axios.post("http://localhost:3000/create-room",
             {
                 name
@@ -110,7 +145,7 @@ export const AppContextProvider = ({ children }) => {
             setToken(data.token)
             localStorage.setItem('token',data.token)
             localStorage.setItem('roomId',userRoomId)
-            navigate('/chat')
+            navigate('/chat' )
         }else{
             toast(`🦄 ${data.message}`, {
                 position: "top-right",
@@ -125,15 +160,13 @@ export const AppContextProvider = ({ children }) => {
                 });
         }
 
-        wsRef.current.onopen = () => {
-            wsRef.current.send(JSON.stringify({
-                type : "join",
-                payload : {
-                    roomId : roomId,
-                    name : name
-                }
-            }))
-        }
+        wsRef.current.send(JSON.stringify({
+            type: "join",
+            payload: {
+              roomId: userRoomId,
+              name: name,
+            }
+          }));
         
     }
 
@@ -143,6 +176,7 @@ export const AppContextProvider = ({ children }) => {
         setRoomId(null)
         localStorage.removeItem('token')
         localStorage.removeItem('roomId')
+        localStorage.removeItem('name')
         navigate('/')
         setMessages([])
     }
