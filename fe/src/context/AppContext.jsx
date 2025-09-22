@@ -13,6 +13,8 @@ export const AppContextProvider = ({ children }) => {
     const [ token , setToken ] = useState(localStorage.getItem('token'))
     const [ user , setUser ] = useState(null)
     const [ name , setName ] = useState(localStorage.getItem('name'))
+    const [ createLoad , setCreateLoad ] = useState(false)
+    const [ joinLoad , setJoinLoad ] = useState(false)
     const [messages, setMessages] = useState([])  
     const wsRef = useRef();
     const inputRef = useRef();
@@ -89,7 +91,7 @@ export const AppContextProvider = ({ children }) => {
 
     const handleCreateRoom = async () => {
         console.log("hii");
-        
+        setCreateLoad(true)
         const { data } = await axios.post(`${import.meta.env.VITE_APP_API_URL}/create-room`,
             {
                 name
@@ -98,6 +100,7 @@ export const AppContextProvider = ({ children }) => {
         
         if(data.success){
             setRoomId(data.roomId)
+            setCreateLoad(false)
             console.log((data.roomId));
             navigate('/chat' )
             setToken(data.token)
@@ -135,7 +138,7 @@ export const AppContextProvider = ({ children }) => {
             theme: "light",
             transition: Bounce,
             });
-
+        setJoinLoad(true)
         const { data } = await axios.post(`${import.meta.env.VITE_APP_API_URL}/join-room`,
             {
                 name
@@ -143,6 +146,7 @@ export const AppContextProvider = ({ children }) => {
         )
         if(data.success){
             setRoomId(userRoomId)
+            setJoinLoad(false)
             setToken(data.token)
             localStorage.setItem('token',data.token)
             localStorage.setItem('roomId',userRoomId)
@@ -199,7 +203,11 @@ export const AppContextProvider = ({ children }) => {
         userRoomId,
         setUserRoomId,
         name,
-        setName
+        setName,
+        createLoad,
+        joinLoad,
+        setCreateLoad,
+        setJoinLoad
     }
 
 

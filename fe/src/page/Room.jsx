@@ -1,9 +1,10 @@
 import React, { useContext, useState } from 'react'
 import { AppContext } from '../context/AppContext'
+import Loader from '../component/Loader'
 
 const Room = () => {
 
-    const { handleCreateRoom, roomId,  handleJoinRoom, setUserRoomId, userRoomId, name , setName } = useContext(AppContext)
+    const { handleCreateRoom, roomId,  handleJoinRoom, setUserRoomId, userRoomId, name , setName, createLoad, joinLoad  } = useContext(AppContext)
 
     
 
@@ -29,7 +30,7 @@ const Room = () => {
                </span> 
                <p className=' text-lg text-gray-800  ' >temporary room that expires after all users exit</p> 
            </div>
-           <button onClick={handleCreateRoom} className=' bg-white  border-2 border-gray-400 py-4 cursor-pointer rounded-md w-full font-medium text-xl ' >Create New Room</button>
+           <button onClick={handleCreateRoom} className='relative bg-white  border-2 border-gray-400 py-4 cursor-pointer rounded-md w-full font-medium text-xl '> { createLoad ? <Loader/> : "Create New Room" }</button>
            <input value={name} onChange={(e)=>{setName(e.target.value)}} className=' bg-gray-300 border-1 border-gray-500 outline-none px-2 py-4 rounded-md font-medium ' placeholder='Enter your name' type="text" />
            <div className=' flex justify-between ' >
                 <input value={userRoomId} onChange={(e)=>setUserRoomId(e.target.value)} className=' bg-gray-300 border-1 border-gray-500 outline-none px-2 py-4 rounded-md font-medium ' placeholder='Enter Room Code' type="text" />
