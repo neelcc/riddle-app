@@ -13,7 +13,7 @@ export const AppContextProvider = ({ children }) => {
     const [ token , setToken ] = useState(localStorage.getItem('token'))
     const [ user , setUser ] = useState(null)
     const [ name , setName ] = useState(localStorage.getItem('name'))
-    const [ createLoad , setCreateLoad ] = useState(true)
+    const [ createLoad , setCreateLoad ] = useState(false)
     const [ joinLoad , setJoinLoad ] = useState(false)
     const [messages, setMessages] = useState([])  
     const wsRef = useRef();
