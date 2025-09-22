@@ -70,7 +70,7 @@ import { createServer } from "http";
 const server = createServer(app)
 const PORT = process.env.PORT || 3001;
 
-const wss = new WebSocketServer({ port : PORT })
+const wss = new WebSocketServer({ server })
 
 let allSockets = []
 
@@ -144,7 +144,7 @@ wss.on("connection",(socket)=>{
 })
 
 
-app.listen(PORT,()=>{
-    console.log("Server is running");
+server.listen(PORT,()=>{
+    console.log("Server is running yh");
    
 })
