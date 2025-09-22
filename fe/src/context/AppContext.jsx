@@ -19,8 +19,9 @@ export const AppContextProvider = ({ children }) => {
 
     useEffect(()=>{
 
-        const ws = new WebSocket("ws://localhost:3001")
-
+        const ws = new WebSocket(import.meta.env.VITE_APP_WS_URL)
+        console.log(import.meta.env.VITE_SOME_KEY);
+        
         console.log(name);
 
         ws.onmessage = (event) => {
@@ -89,7 +90,7 @@ export const AppContextProvider = ({ children }) => {
     const handleCreateRoom = async () => {
         console.log("hii");
         
-        const { data } = await axios.post("http://localhost:3000/create-room",
+        const { data } = await axios.post(`${import.meta.env.VITE_APP_API_URL}/create-room`,
             {
                 name
             }
@@ -135,7 +136,7 @@ export const AppContextProvider = ({ children }) => {
             transition: Bounce,
             });
 
-        const { data } = await axios.post("http://localhost:3000/create-room",
+        const { data } = await axios.post(`${import.meta.env.VITE_APP_API_URL}/join-room`,
             {
                 name
             }
