@@ -60,17 +60,17 @@ app.post('/join-room', async (req,res)=>{
 })
 
 
-app.listen(3000,()=>{
-     console.log("Server is running");
-    
-})
+
 
 
 
 import { WebSocketServer } from 'ws'
+import { createServer } from "http";
 
+const server = createServer(app)
+const PORT = process.env.PORT || 3001;
 
-const wss = new WebSocketServer({ port:3001 })
+const wss = new WebSocketServer({ port : PORT })
 
 let allSockets = []
 
@@ -141,4 +141,10 @@ wss.on("connection",(socket)=>{
         allSockets = allSockets.filter(s => s.  socket !== socket);
         console.log("Client disconnected");
     });
+})
+
+
+app.listen(PORT,()=>{
+    console.log("Server is running");
+   
 })
