@@ -30,11 +30,17 @@ const Room = () => {
                </span> 
                <p className=' text-lg text-gray-800  ' >temporary room that expires after all users exit</p> 
            </div>
-           <button onClick={handleCreateRoom} className='relative bg-white  border-2 border-gray-400 py-4 cursor-pointer rounded-md w-full font-medium text-xl '> { createLoad ? <Loader/> : "Create New Room" }</button>
+           <button
+         onClick={handleCreateRoom}
+          className="relative bg-white border-2 border-gray-400 py-2 cursor-pointer rounded-md w-full font-medium text-xl flex items-center justify-center"
+            >
+         {createLoad ? <Loader /> : "Create New Room"}
+          </button>
+
            <input value={name} onChange={(e)=>{setName(e.target.value)}} className=' bg-gray-300 border-1 border-gray-500 outline-none px-2 py-4 rounded-md font-medium ' placeholder='Enter your name' type="text" />
            <div className=' flex justify-between ' >
                 <input value={userRoomId} onChange={(e)=>setUserRoomId(e.target.value)} className=' bg-gray-300 border-1 border-gray-500 outline-none px-2 py-4 rounded-md font-medium ' placeholder='Enter Room Code' type="text" />
-                <button onClick={handleJoinRoom} className=' bg-white border border-gray-400 px-2 py-4 rounded-md  font-medium text-md cursor-pointer ' >Join Room</button>
+                <button onClick={handleJoinRoom} className=' flex items-center justify-center relative bg-white border border-gray-400 px-2 py-4 rounded-md  font-medium text-md cursor-pointer '> { joinLoad ? <Loader/> :  "Join Room" }</button>
            </div>
       </div>
 
