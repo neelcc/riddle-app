@@ -8,6 +8,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+
 app.post('/create-room', async (req,res)=>{
     console.log(process.env.JWT_SECRET);
     
@@ -56,6 +57,9 @@ app.post('/join-room', async (req,res)=>{
 
 app.listen(3000,()=>{
      console.log("Server is running");
+     res.send({
+        "msg" : "Server is running!"
+     })
 })
 
 
